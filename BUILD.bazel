@@ -1,0 +1,68 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_embed_data")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@com_github_bazelbuild_buildtools//buildifier:def.bzl", "buildifier")
+
+# gazelle:prefix github.com/grahamjenson/asteroids
+gazelle(name = "gazelle")
+
+buildifier(name = "buildifier")
+
+# Asteroids binaries
+
+go_embed_data(
+    name = "wasm_embed",
+    # The go_binary rule that generated the WASM bin
+    src = "//wasm",
+    package = "main",
+    string = False,
+    var = "WASM_BIN",
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "asteroids.go",
+        ":wasm_embed" #keep
+    ],
+    importpath = "github.com/grahamjenson/asteroids",
+    visibility = ["//visibility:private"],
+    deps = ["//desktop:go_default_library"],
+)
+
+# use lorca
+go_binary(
+    name = "asteroids",
+    embed = [":go_default_library"],
+    goarch = "amd64",
+    goos = "darwin",
+    visibility = ["//visibility:public"],
+)
+
+# use webview
+go_binary(
+    name = "asteroids_darwin",
+    cgo = True,
+    embed = [":go_default_library"],
+    goarch = "amd64",
+    goos = "darwin",
+    pure = "off",
+    visibility = ["//visibility:public"],
+)
+
+# use lorca
+go_binary(
+    name = "asteroids_windows",
+    embed = [":go_default_library"],
+    goarch = "amd64",
+    goos = "windows",
+    visibility = ["//visibility:public"],
+)
+
+# use lorca
+go_binary(
+    name = "asteroids_linux",
+    embed = [":go_default_library"],
+    goarch = "amd64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,47 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_embed_data", "go_library")
+
+go_embed_data(
+    name = "static_files",
+    srcs = [
+        ":index.html",
+        ":init.js",
+        ":wasm_exec.js",
+    ],
+    package = "desktop",
+    string = True,
+    var = "STATIC_STRINGS",
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "config.go",
+        "lorca.go",
+        "webview.go",
+        ":static_files",  # keep
+    ],
+    importpath = "github.com/grahamjenson/asteroids/desktop",
+    visibility = ["//visibility:public"],
+    deps = select({
+        "@io_bazel_rules_go//go/platform:android": [
+            "@com_github_zserge_lorca//:go_default_library",
+        ],
+        "@io_bazel_rules_go//go/platform:darwin": [
+            "//desktop/cocoa:go_default_library",
+            "@com_github_webview_webview//:go_default_library",
+            "@com_github_zserge_lorca//:go_default_library",
+        ],
+        "@io_bazel_rules_go//go/platform:ios": [
+            "//desktop/cocoa:go_default_library",
+            "@com_github_webview_webview//:go_default_library",
+            "@com_github_zserge_lorca//:go_default_library",
+        ],
+        "@io_bazel_rules_go//go/platform:linux": [
+            "@com_github_zserge_lorca//:go_default_library",
+        ],
+        "@io_bazel_rules_go//go/platform:windows": [
+            "@com_github_zserge_lorca//:go_default_library",
+        ],
+        "//conditions:default": [],
+    }),
+)

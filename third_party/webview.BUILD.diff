@@ -1,0 +1,27 @@
+diff -ruN BUILD.bazel
+--- /dev/null
++++ BUILD.bazel
+@@ -0,0 +1,22 @@
++load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
++
++go_library(
++    name = "go_default_library",
++    srcs = [
++        "webview.cc",
++        "webview.go",
++        "webview.h",
++    ],
++    cgo = True,
++    # Hardcoded for macOS builds
++    copts = ["-DWEBVIEW_COCOA"],
++    clinkopts = ["-framework WebKit"],
++    importpath = "github.com/webview/webview",
++    visibility = ["//visibility:public"],
++)
++
++go_test(
++    name = "go_default_test",
++    srcs = ["webview_test.go"],
++    embed = [":go_default_library"],
++)
++
