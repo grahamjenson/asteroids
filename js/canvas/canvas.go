@@ -30,6 +30,10 @@ func (ctx *Context2D) SetStrokeStyle(co string) {
 	ctx.JS.Set("strokeStyle", co)
 }
 
+func (ctx *Context2D) SetLineDash(dash []interface{}) {
+	ctx.JS.Call("setLineDash", dash)
+}
+
 func (ctx *Context2D) SetTextAlign(co string) {
 	ctx.JS.Set("textAlign", co)
 }

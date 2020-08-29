@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "activations.go",
+        "common.go",
+        "math.go",
+    ],
+    importmap = "github.com/grahamjenson/asteroids/vendor/github.com/yaricom/goNEAT/neat/utils",
+    importpath = "github.com/yaricom/goNEAT/neat/utils",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["math_test.go"],
+    embed = [":go_default_library"],
+)

@@ -1,0 +1,46 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "common.go",
+        "gene.go",
+        "genome.go",
+        "genome_reader.go",
+        "genome_writer.go",
+        "innovation.go",
+        "mimo_gene.go",
+        "organism.go",
+        "population.go",
+        "population_epoch.go",
+        "species.go",
+    ],
+    importmap = "github.com/grahamjenson/asteroids/vendor/github.com/yaricom/goNEAT/neat/genetics",
+    importpath = "github.com/yaricom/goNEAT/neat/genetics",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/network:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/utils:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "gene_test.go",
+        "genome_reader_test.go",
+        "genome_test.go",
+        "genome_writer_test.go",
+        "organism_test.go",
+        "population_epoch_test.go",
+        "population_test.go",
+        "species_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/network:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/utils:go_default_library",
+    ],
+)

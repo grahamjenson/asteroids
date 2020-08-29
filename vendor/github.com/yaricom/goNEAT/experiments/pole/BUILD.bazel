@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "cart2pole.go",
+        "cartpole.go",
+        "common.go",
+    ],
+    importmap = "github.com/grahamjenson/asteroids/vendor/github.com/yaricom/goNEAT/experiments/pole",
+    importpath = "github.com/yaricom/goNEAT/experiments/pole",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/experiments:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/genetics:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/network:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "cart2pole_test.go",
+        "cartpole_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/experiments:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/genetics:go_default_library",
+    ],
+)

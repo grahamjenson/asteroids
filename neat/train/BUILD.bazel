@@ -1,0 +1,49 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_embed_data", "go_library", "go_test")
+
+go_embed_data(
+    name = "neat_config",
+    # The go_binary rule that generated the WASM bin
+    src = ":neat.config",
+    package = "train",
+    string = True,
+    var = "CONFIG_FILE",
+)
+
+go_embed_data(
+    name = "startgenes",
+    # The go_binary rule that generated the WASM bin
+    src = ":startgenes.config",
+    package = "train",
+    string = True,
+    var = "GENOME_INIT",
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "train.go",
+        ":neat_config",  #keep
+        ":startgenes",  #keep
+    ],
+    importpath = "github.com/grahamjenson/asteroids/neat/train",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//game:go_default_library",
+        "//neat/bot:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/experiments:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/genetics:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/network:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["train_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/experiments:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/genetics:go_default_library",
+    ],
+)

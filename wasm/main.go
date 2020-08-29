@@ -1,11 +1,17 @@
 package main
 
 import (
-	"math"
+	"fmt"
+	"strings"
 	"syscall/js"
 
-	"github.com/grahamjenson/asteroids/canvas"
-	"github.com/grahamjenson/asteroids/vector2d"
+	"github.com/grahamjenson/asteroids/game"
+	"github.com/grahamjenson/asteroids/js/canvas"
+	"github.com/grahamjenson/asteroids/neat/bot"
+	"github.com/grahamjenson/asteroids/neat/players"
+	"github.com/grahamjenson/asteroids/render"
+	"github.com/yaricom/goNEAT/neat/genetics"
+	"github.com/yaricom/goNEAT/neat/network"
 )
 
 func initScreen(window js.Value, w, h int) *canvas.Context2D {
@@ -29,7 +35,23 @@ func main() {
 	ctx := initScreen(window, width, height)
 	ctx.SetGlobalCompositeOperation("destination-over")
 
-	pressedButtons := map[int]bool{}
+	humanButtons := map[int]bool{}
+	human := false
+
+	humanscore := []int{}
+	botscore := []int{}
+
+	bots := []*network.Network{
+		getGenome(players.PLAYER_1),
+		getGenome(players.PLAYER_2),
+		getGenome(players.PLAYER_3),
+		getGenome(players.PLAYER_4),
+		getGenome(players.PLAYER_5),
+	}
+	botN := 0
+
+	TIME_TO_PLAY := 20.0
+	timeLeft := TIME_TO_PLAY
 
 	window.Call(
 		"addEventListener",
@@ -37,7 +59,7 @@ func main() {
 		js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 			e := args[0]
 			e.Call("preventDefault")
-			pressedButtons[e.Get("keyCode").Int()] = false
+			humanButtons[e.Get("keyCode").Int()] = false
 			return nil
 		}))
 
@@ -47,12 +69,15 @@ func main() {
 		js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 			e := args[0]
 			e.Call("preventDefault")
-			pressedButtons[e.Get("keyCode").Int()] = true
+			humanButtons[e.Get("keyCode").Int()] = true
 			return nil
 		}))
 
-	game := Game{}
+	game := &game.Game{}
 	game.Init(width, height)
+
+	diagnostics := &Diagnostics{}
+	diagnostics.Init(width, height)
 
 	var gameLoop js.Func
 	prevNow := 0.0
@@ -62,13 +87,60 @@ func main() {
 			dt := (now - prevNow) / 1000
 			prevNow = now
 
-			game.Update(dt, pressedButtons)
+			// kill if timeout
+			if timeLeft < 0 {
+				game.EndGame()
+				timeLeft = TIME_TO_PLAY
+			}
+
+			if game.State == "menu" {
+				game.Update(dt, humanButtons)
+				timeLeft = TIME_TO_PLAY
+			} else if human {
+				game.Update(dt, humanButtons)
+				timeLeft -= dt
+
+			} else {
+				botButtons, err := bot.GetOutputs(bots[botN], game)
+				if err != nil {
+					fmt.Println("bot outputs error", err)
+					return
+				}
+				game.Update(dt, botButtons)
+				timeLeft -= dt
+
+			}
+
+			diagnostics.Update(dt)
+			if game.Dead || game.Win {
+				for _, b := range bots {
+					b.Flush()
+				}
+
+				if human {
+					humanscore = append(humanscore, game.Score)
+				} else {
+					botscore = append(botscore, game.Score)
+				}
+				human = !human
+				if human {
+					game.Seed = int64(len(humanscore)) + 10
+				} else {
+					botN = (botN + 1) % 5
+					game.Seed = int64(len(botscore)) + 10
+				}
+
+				game.Dead = false
+				game.Win = false
+			}
 
 			// Clear Screen
 			ctx.ClearRect(0, 0, width, height) // clear canvas
-			// Render
 
-			game.Render(ctx)
+			// Render
+			render.RenderGame(ctx, game)
+			render.RenderScorePlayer(ctx, game, humanscore, botscore, human, botN, timeLeft)
+			diagnostics.Render(ctx)
 
 			// Interactions phase
 			window.Call("requestAnimationFrame", gameLoop)
@@ -84,47 +156,10 @@ func main() {
 	<-done
 }
 
-////
-// Utils
-////
+func getGenome(genomeStr string) *network.Network {
+	genome, _ := genetics.ReadGenome(strings.NewReader(genomeStr), 1)
 
-// useful https://jlongster.com/Making-Sprite-based-Games-with-Canvas
-func WrapXY(x, y float64, width, height int) (float64, float64) {
-	nx := math.Mod(x, float64(width))
-	ny := math.Mod(y, float64(height))
+	net, _ := genome.Genesis(1)
 
-	if nx < 0 {
-		nx = float64(width)
-	}
-
-	if ny < 0 {
-		ny = float64(height)
-	}
-	return nx, ny
-}
-
-func Pythag(x, y float64) float64 {
-	return math.Sqrt((x * x) + (y * y))
-}
-
-func RenderPolygon(ctx *canvas.Context2D, s *vector2d.Polygon) {
-	ctx.Save()
-
-	ctx.BeginPath()
-	first := true
-	var firstPoint vector2d.Vector
-
-	for _, v := range s.Matrix {
-		if first {
-			ctx.MoveTo(v[0], v[1])
-			first = false
-			firstPoint = v
-		} else {
-			ctx.LineTo(v[0], v[1])
-		}
-	}
-
-	ctx.LineTo(firstPoint[0], firstPoint[1])
-	ctx.Stroke()
-	ctx.Restore()
+	return net
 }

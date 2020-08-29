@@ -2,7 +2,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["canvas.go"],
-    importpath = "github.com/grahamjenson/asteroids/canvas",
+    srcs = ["keys.go"],
+    importpath = "github.com/grahamjenson/asteroids/js/keys",
     visibility = ["//visibility:public"],
 )

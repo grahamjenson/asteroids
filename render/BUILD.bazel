@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["render.go"],
+    importpath = "github.com/grahamjenson/asteroids/render",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//game:go_default_library",
+        "//js/canvas:go_default_library",
+        "//vector2d:go_default_library",
+    ],
+)

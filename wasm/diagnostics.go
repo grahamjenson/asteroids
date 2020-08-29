@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/grahamjenson/asteroids/canvas"
+	"github.com/grahamjenson/asteroids/js/canvas"
 )
 
 type Diagnostics struct {
@@ -18,7 +18,7 @@ func (d *Diagnostics) Init(width, height int) {
 	d.height = height
 }
 
-func (d *Diagnostics) Update(dt float64, _ map[int]bool) {
+func (d *Diagnostics) Update(dt float64) {
 	d.tdiffSum += dt
 	d.markCount++
 }

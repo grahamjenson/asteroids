@@ -3,18 +3,19 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
-        "asteroids.go",
         "diagnostics.go",
-        "game.go",
-        "keys.go",
         "main.go",
-        "ship.go",
     ],
     importpath = "github.com/grahamjenson/asteroids/wasm",
     visibility = ["//visibility:private"],
     deps = [
-        "//canvas:go_default_library",
-        "//vector2d:go_default_library",
+        "//game:go_default_library",
+        "//js/canvas:go_default_library",
+        "//neat/bot:go_default_library",
+        "//neat/players:go_default_library",
+        "//render:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/genetics:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/network:go_default_library",
     ],
 )
 

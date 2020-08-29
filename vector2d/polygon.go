@@ -40,6 +40,11 @@ func (s Polygon) Clone() *Polygon {
 func (s *Polygon) Transform(m Matrix) *Polygon {
 	// We always transform about the center of the
 	x, y := s.Centroid()
+	return s.TransformAbout(m, x, y)
+}
+
+func (s *Polygon) TransformAbout(m Matrix, x, y float64) *Polygon {
+	// We always transform about the center of the
 	aboutMatrix := CenterTransformationAt(m, x, y)
 	ns := aboutMatrix.Product(s.Matrix)
 	s.Matrix = ns
@@ -49,6 +54,10 @@ func (s *Polygon) Transform(m Matrix) *Polygon {
 func (s *Polygon) Rotate(radian float64) *Polygon {
 	s.Transform(RotateMatrix(radian))
 	return s
+}
+
+func (s *Polygon) RotateAbout(radian float64, x, y float64) *Polygon {
+	return s.TransformAbout(RotateMatrix(radian), x, y)
 }
 
 func (s *Polygon) Translate(dx, dy float64) *Polygon {
@@ -156,7 +165,18 @@ func (s *Polygon) Centroid() (float64, float64) {
 	cx := 0.0
 	cy := 0.0
 	ar := 0.0
-	for _, e := range s.Edges() {
+
+	edges := s.Edges()
+
+	// handle edge case of it being a line
+	if len(edges) == 2 {
+		e := edges[0]
+		p1 := e.P1
+		p2 := e.P2
+		return (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2
+	}
+
+	for _, e := range edges {
 		p1 := e.P1
 		p2 := e.P2
 
@@ -165,6 +185,7 @@ func (s *Polygon) Centroid() (float64, float64) {
 		cy += (p1[1] + p2[1]) * a
 		ar += a
 	}
+
 	ar = ar * 3 // we want 1 / 6 the area and we currently have 2*area
 	cx = cx / ar
 	cy = cy / ar

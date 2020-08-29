@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_test(
+    name = "go_default_test",
+    srcs = ["game_test.go"],
+    embed = [":go_default_library"],
+    deps = ["//js/keys:go_default_library"],
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "asteroids.go",
+        "game.go",
+        "ship.go",
+    ],
+    importpath = "github.com/grahamjenson/asteroids/game",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//js/keys:go_default_library",
+        "//vector2d:go_default_library",
+    ],
+)

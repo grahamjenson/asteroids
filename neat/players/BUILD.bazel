@@ -1,0 +1,60 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_embed_data", "go_library")
+
+go_embed_data(
+    name = "player_1",
+    # The go_binary rule that generated the WASM bin
+    src = ":player_1.genome",
+    package = "players",
+    string = True,
+    var = "PLAYER_1",
+)
+
+go_embed_data(
+    name = "player_2",
+    # The go_binary rule that generated the WASM bin
+    src = ":player_2.genome",
+    package = "players",
+    string = True,
+    var = "PLAYER_2",
+)
+
+go_embed_data(
+    name = "player_3",
+    # The go_binary rule that generated the WASM bin
+    src = ":player_3.genome",
+    package = "players",
+    string = True,
+    var = "PLAYER_3",
+)
+
+go_embed_data(
+    name = "player_4",
+    # The go_binary rule that generated the WASM bin
+    src = ":player_4.genome",
+    package = "players",
+    string = True,
+    var = "PLAYER_4",
+)
+
+go_embed_data(
+    name = "player_5",
+    # The go_binary rule that generated the WASM bin
+    src = ":player_5.genome",
+    package = "players",
+    string = True,
+    var = "PLAYER_5",
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "players.go",
+        ":player_1",  #keep
+        ":player_2",  #keep
+        ":player_3",  #keep
+        ":player_4",  #keep
+        ":player_5",  #keep
+    ],
+    importpath = "github.com/grahamjenson/asteroids/neat/players",
+    visibility = ["//visibility:public"],
+)

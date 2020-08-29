@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "neat.go",
+        "trait.go",
+    ],
+    importmap = "github.com/grahamjenson/asteroids/vendor/github.com/yaricom/goNEAT/neat",
+    importpath = "github.com/yaricom/goNEAT/neat",
+    visibility = ["//visibility:public"],
+    deps = ["//vendor/github.com/yaricom/goNEAT/neat/utils:go_default_library"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "neat_test.go",
+        "trait_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = ["//vendor/github.com/yaricom/goNEAT/neat/utils:go_default_library"],
+)

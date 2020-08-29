@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["XOR.go"],
+    importmap = "github.com/grahamjenson/asteroids/vendor/github.com/yaricom/goNEAT/experiments/xor",
+    importpath = "github.com/yaricom/goNEAT/experiments/xor",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/experiments:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/genetics:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["XOR_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/experiments:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/genetics:go_default_library",
+    ],
+)

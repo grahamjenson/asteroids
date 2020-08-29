@@ -1,0 +1,30 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "common.go",
+        "fast_network.go",
+        "link.go",
+        "network.go",
+        "nnode.go",
+    ],
+    importmap = "github.com/grahamjenson/asteroids/vendor/github.com/yaricom/goNEAT/neat/network",
+    importpath = "github.com/yaricom/goNEAT/neat/network",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/utils:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "fast_network_test.go",
+        "network_test.go",
+        "nnode_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = ["//vendor/github.com/yaricom/goNEAT/neat/utils:go_default_library"],
+)

@@ -22,7 +22,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "asteroids.go",
-        ":wasm_embed" #keep
+        ":wasm_embed",  #keep
     ],
     importpath = "github.com/grahamjenson/asteroids",
     visibility = ["//visibility:private"],

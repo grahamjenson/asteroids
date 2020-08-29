@@ -1,0 +1,14 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["neat.go"],
+    importpath = "github.com/grahamjenson/asteroids/neat/bot",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//game:go_default_library",
+        "//js/keys:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat:go_default_library",
+        "//vendor/github.com/yaricom/goNEAT/neat/network:go_default_library",
+    ],
+)
