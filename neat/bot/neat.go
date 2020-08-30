@@ -23,7 +23,7 @@ func FindInputs(g *game.Game) []float64 {
 	for i := 0; i < 8; i++ {
 		distance := g.Ship.WhiskerDistance(g.Ship.Whiskers[i], g.Asteroids)
 		norm := (300 - distance) / 300
-		inputs = append(inputs, exp(norm, 40))
+		inputs = append(inputs, exp(norm, 10))
 	}
 
 	return inputs

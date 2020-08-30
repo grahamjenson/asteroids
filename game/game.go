@@ -29,7 +29,7 @@ func (g *Game) Init(width, height int) {
 	g.Height = height
 	g.Width = width
 
-	g.MenuText = "*** PRESS ENTER TO START ***"
+	g.MenuText = ""
 
 	g.InitGame()
 
@@ -80,7 +80,7 @@ func (g *Game) StateTransition() {
 		g.Score = 0
 		// Start State
 	} else if g.State == "game" && g.nextState == "menu" {
-		g.MenuText = "*** GAME OVER! PRESS ENTER TO START ***"
+
 	}
 
 	g.State = g.nextState
@@ -161,8 +161,8 @@ func (g *Game) Collisions() {
 				a1.Init(g.Width, g.Height, scale)
 				a2.Init(g.Width, g.Height, scale)
 
-				rot1 := -math.Pi / 4
-				rot2 := +math.Pi / 4
+				rot1 := -math.Pi / 8
+				rot2 := +math.Pi / 8
 
 				a1.x = hitAsteroid.x - (40 * hitAsteroid.scale)
 				a1.y = hitAsteroid.y + (40 * hitAsteroid.scale)

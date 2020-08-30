@@ -9,13 +9,13 @@ import (
 	"github.com/grahamjenson/asteroids/vector2d"
 )
 
-func RenderGame(ctx *canvas.Context2D, g *game.Game) {
+func RenderGame(ctx *canvas.Context2D, g *game.Game, human bool) {
 	switch g.State {
 	case "menu":
 		RenderMenu(ctx, g)
 		RenderAlways(ctx, g)
 	case "game":
-		RenderShip(ctx, g.Ship, g.Asteroids)
+		RenderShip(ctx, g.Ship, g.Asteroids, human)
 		RenderAlways(ctx, g)
 	}
 
@@ -49,31 +49,33 @@ func RenderMenu(ctx *canvas.Context2D, g *game.Game) {
 	ctx.Restore()
 }
 
-func RenderShip(ctx *canvas.Context2D, s *game.Ship, asteroids []*game.Asteroid) {
+func RenderShip(ctx *canvas.Context2D, s *game.Ship, asteroids []*game.Asteroid, human bool) {
 	// Leave custom calculations for collision
 	RenderPolygon(ctx, s.Projection)
 
-	for i := 0; i < 8; i++ {
-		whisker := s.Whiskers[i]
-		x, y := whisker.Centroid()
-		ctx.Save()
-		ctx.SetLineDash([]interface{}{5, 15})
-		ctx.SetStrokeStyle("rgba(0, 0, 0, .5)")
-		RenderPolygon(ctx, whisker)
+	if !human {
+		for i := 0; i < 8; i++ {
+			whisker := s.Whiskers[i]
+			x, y := whisker.Centroid()
+			ctx.Save()
+			ctx.SetLineDash([]interface{}{5, 15})
+			ctx.SetStrokeStyle("rgba(0, 0, 0, .5)")
+			RenderPolygon(ctx, whisker)
 
-		distance := s.WhiskerDistance(whisker, asteroids)
+			distance := s.WhiskerDistance(whisker, asteroids)
 
-		ctx.SetTextAlign("center")
-		ctx.SetFont("bold 12px Courier New")
-		ctx.SetStrokeStyle("rgba(0, 0, 0, 1)")
-		ctx.FillText(
-			fmt.Sprintf("%0.f", distance),
-			int(x),
-			int(y),
-			1000,
-		)
+			ctx.SetTextAlign("center")
+			ctx.SetFont("bold 12px Courier New")
+			ctx.SetStrokeStyle("rgba(0, 0, 0, 1)")
+			ctx.FillText(
+				fmt.Sprintf("%0.f", distance),
+				int(x),
+				int(y),
+				1000,
+			)
 
-		ctx.Restore()
+			ctx.Restore()
+		}
 	}
 
 	if s.IsBullet() {
@@ -88,13 +90,13 @@ func RenderScorePlayer(ctx *canvas.Context2D, g *game.Game, humanScore, botScore
 	ctx.SetTextAlign("center")
 	ctx.SetFont("bold 20px Courier New")
 	ctx.SetStrokeStyle("rgba(0, 0, 0, 1)")
-	ctx.FillText("AI Scores", (g.Width/2)-g.Width/4, 100, g.Width/4)
+	ctx.FillText("AI", (g.Width/2)-g.Width/4, 100, g.Width/4)
 
 	for i, s := range botScore {
 		ctx.FillText(fmt.Sprintf("%v", s), (g.Width/2)-g.Width/4, 130+(i*30), g.Width/4)
 	}
 
-	ctx.FillText("Human Scores", (g.Width/2)+g.Width/4, 100, g.Width/4)
+	ctx.FillText("Human", (g.Width/2)+g.Width/4, 100, g.Width/4)
 	for i, s := range humanScore {
 		ctx.FillText(fmt.Sprintf("%v", s), (g.Width/2)+g.Width/4, 130+(i*30), g.Width/4)
 	}

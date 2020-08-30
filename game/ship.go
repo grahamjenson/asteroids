@@ -30,6 +30,8 @@ type Ship struct {
 	width, height int
 
 	bulletX, bulletY, bulletVelocityX, bulletVelocityY, bulletDistance float64
+
+	Human bool
 }
 
 func (s *Ship) Init(width, height int) {
@@ -84,15 +86,19 @@ func (s *Ship) IsBullet() bool {
 }
 func (s *Ship) Update(dt float64, pressedButtons map[int]bool) {
 
+	controlCoef := 1.0
+	if !s.Human {
+		controlCoef = 2.0
+	}
 	if pressedButtons[keys.KEY_LEFT] {
-		s.Rotation += math.Pi * dt * 2
+		s.Rotation += math.Pi * dt * 2 * controlCoef
 	}
 	if pressedButtons[keys.KEY_RIGHT] {
-		s.Rotation += -math.Pi * dt * 2
+		s.Rotation += -math.Pi * dt * 2 * controlCoef
 	}
 	if pressedButtons[keys.KEY_UP] {
-		s.velocityX += dt * 60 * math.Sin(s.Rotation)
-		s.velocityY += dt * 60 * math.Cos(s.Rotation)
+		s.velocityX += dt * 60 * math.Sin(s.Rotation) * controlCoef
+		s.velocityY += dt * 60 * math.Cos(s.Rotation) * controlCoef
 	}
 
 	// Move will add to the velocity based on the direction the

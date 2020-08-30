@@ -75,7 +75,7 @@ func main() {
 
 	game := &game.Game{}
 	game.Init(width, height)
-
+	game.MenuText = "PRESS ENTER: BOTS TURN"
 	diagnostics := &Diagnostics{}
 	diagnostics.Init(width, height)
 
@@ -87,6 +87,8 @@ func main() {
 			dt := (now - prevNow) / 1000
 			prevNow = now
 
+			game.Ship.Human = human
+
 			// kill if timeout
 			if timeLeft < 0 {
 				game.EndGame()
@@ -94,10 +96,10 @@ func main() {
 			}
 
 			if game.State == "menu" {
-				game.Update(dt, humanButtons)
+				game.Update(1.0/60.0, humanButtons)
 				timeLeft = TIME_TO_PLAY
 			} else if human {
-				game.Update(dt, humanButtons)
+				game.Update(1.0/60.0, humanButtons)
 				timeLeft -= dt
 
 			} else {
@@ -106,7 +108,7 @@ func main() {
 					fmt.Println("bot outputs error", err)
 					return
 				}
-				game.Update(dt, botButtons)
+				game.Update(1.0/60.0, botButtons)
 				timeLeft -= dt
 
 			}
@@ -124,10 +126,12 @@ func main() {
 				}
 				human = !human
 				if human {
-					game.Seed = int64(len(humanscore)) + 10
+					game.Seed = int64(len(humanscore)) + 21
+					game.MenuText = fmt.Sprintf("PRESS ENTER: YOUR TURN")
 				} else {
 					botN = (botN + 1) % 5
-					game.Seed = int64(len(botscore)) + 10
+					game.Seed = int64(len(botscore)) + 21
+					game.MenuText = fmt.Sprintf("PRESS ENTER: BOTS TURN")
 				}
 
 				game.Dead = false
@@ -138,7 +142,7 @@ func main() {
 			ctx.ClearRect(0, 0, width, height) // clear canvas
 
 			// Render
-			render.RenderGame(ctx, game)
+			render.RenderGame(ctx, game, human)
 			render.RenderScorePlayer(ctx, game, humanscore, botscore, human, botN, timeLeft)
 			diagnostics.Render(ctx)
 
